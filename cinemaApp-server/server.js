@@ -4,7 +4,7 @@ const app = express();
 var cors = require('cors');
 const session = require('express-session');
 const mongoose = require('mongoose');
-const Note = require('./models/note');
+const Note = require('./models/films');
 const User = require('./models/user');
 mongoose.connect('mongodb+srv://admin:admin@cluster0.vgfdm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
     .then(()=>{
@@ -106,7 +106,8 @@ app.post('/register',(request, response) => {
     var newUser= new User({
         login:request.body.login,
         password:request.body.password,
-        fullName:request.body.fullName
+        fullName:request.body.fullName,
+        isAdmin:false
     })
 
     User.countDocuments( {login:newUser.login}, (error, count) => {
@@ -134,7 +135,7 @@ app.get('/logout',(request, response) => {
 });
 
 app.get('/isLogged',(request, response) => {
-    if(!request.session.userId) return res.status(401).json();
+    if(!request.session.userId) return response.status(401).json();
 
     User.findOne({_id: request.session.userId}), (error,user)=>{
         if(err) return response.status(401).json({msg:'err'});
